@@ -31,16 +31,17 @@ Alexia Shumway
 
 This mini report aimed to address the primary amplifying host for the
 West Nile Virus (WNV) in Salt Lake City, Utah. This was done by figuring
-out was the mosquitoes were eating. The House Finch is known to carry
-WNV very well, so it was hypothesized that it was the main amplifier in
-the area. Hosts were identifies by sequencing DNA from mosquito blood
-meals and then those results were checked against were WNV was actually
-found.The findings showed that the House Finch was the most common thing
-that mosquitoes fed on, and the locations with higher amounts of House
-Finch blood meals also had a statistically significant amount of WNV
-positive pools. The conclusion drawn is that the House Finch can be
-confidently identified as the main driving force of WNV is Salt Lake
-City.
+out what the mosquitoes were eating. The House Finch is known to carry
+WNV exceptionally well, so it was hypothesized that it was the main
+amplifier in the area. Hosts were identified by sequencing DNA from
+mosquito blood meals and then those results were checked against where
+WNV was actually found.The findings showed that the House Finch was the
+most common thing that mosquitoes fed on, and the locations with higher
+amounts of House Finch blood meals also had a statistically significant
+amount of WNV positive pools. The conclusion drawn is that the House
+Finch can be confidently identified as the main driving force of WNV is
+Salt Lake City. This also means that control of House Finch populations
+is an important goal when also controlling WNV in Utah.
 
 # BACKGROUND
 
