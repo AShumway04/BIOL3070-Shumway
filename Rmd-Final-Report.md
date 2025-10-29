@@ -10,8 +10,9 @@ Alexia Shumway
   - [Hypothesis](#hypothesis)
   - [Prediction](#prediction)
 - [METHODS](#methods)
-  - [Firefly Population by Region
-    Boxplot](#firefly-population-by-region-boxplot)
+  - [Firefly Abundance by Region
+    Boxplot](#firefly-abundance-by-region-boxplot)
+  - [Two Sample T-Test](#two-sample-t-test)
 - [DICUSSION](#dicussion)
 - [CONCLUSION](#conclusion)
 - [REFERENCES](#references)
@@ -30,7 +31,7 @@ Alexia Shumway
 
 # METHODS
 
-## Firefly Population by Region Boxplot
+## Firefly Abundance by Region Boxplot
 
 ``` r
 # Firefly Boxplot
@@ -153,6 +154,94 @@ ggplot(fireflies_clean, aes(x = region, y = firefly_count, fill = region)) +
     ## (`stat_boxplot()`).
 
 ![](Rmd-Final-Report_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+
+## Two Sample T-Test
+
+``` r
+# Load packages
+library(ggplot2)
+library(stringi)
+library(dplyr)
+
+# Read in data
+fireflies <- read.csv("Usable Data Fireflies - Usable Data (1).csv", stringsAsFactors = FALSE)
+
+# Ensure correct column naming
+colnames(fireflies) <- c("firefly_count", "region")
+
+# Convert firefly_count to numeric & handle blanks
+fireflies$firefly_count <- suppressWarnings(as.numeric(fireflies$firefly_count))
+fireflies$firefly_count[fireflies$firefly_count < 0] <- NA  # Remove impossible values if any
+
+# Clean region column
+fireflies$region <- trimws(fireflies$region)
+fireflies$region[fireflies$region == ""] <- NA
+fireflies$region <- stri_trans_general(fireflies$region, "NFKC")
+fireflies$region <- tolower(fireflies$region)
+
+# Fix region typos and mislabeled data
+fireflies$region[fireflies$region %in% c("n", "nrth", "noth", "north ", "northwest")] <- "north"
+fireflies$region[fireflies$region %in% c("s", "sth", "soth", "south ", "southeast")] <- "south"
+
+# Keep only valid data
+fireflies_clean <- fireflies %>%
+  filter(region %in% c("north", "south"), !is.na(firefly_count))
+
+fireflies_clean$region <- factor(fireflies_clean$region)
+
+# Diagnostic check
+cat("Counts in each group:\n")
+```
+
+    ## Counts in each group:
+
+``` r
+print(table(fireflies_clean$region))
+```
+
+    ## 
+    ## north south 
+    ##   433    61
+
+``` r
+cat("\nSummary of firefly counts:\n")
+```
+
+    ## 
+    ## Summary of firefly counts:
+
+``` r
+print(summary(fireflies_clean$firefly_count))
+```
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    ##    1.00    2.00    4.00   17.43   10.00 1000.00
+
+``` r
+# T-Test
+ttest_results <- t.test(firefly_count ~ region, data = fireflies_clean)
+
+cat("\nT-test Results:\n")
+```
+
+    ## 
+    ## T-test Results:
+
+``` r
+print(ttest_results)
+```
+
+    ## 
+    ##  Welch Two Sample t-test
+    ## 
+    ## data:  firefly_count by region
+    ## t = -1.2716, df = 61.533, p-value = 0.2083
+    ## alternative hypothesis: true difference in means between group north and group south is not equal to 0
+    ## 95 percent confidence interval:
+    ##  -75.33068  16.75983
+    ## sample estimates:
+    ## mean in group north mean in group south 
+    ##            13.81293            43.09836
 
 # DICUSSION
 
