@@ -322,7 +322,7 @@ print(ttest_results)
 ``` r
 library(ggplot2)
 
-# --- Load and inspect data ---
+# Load data
 fireflies_raw <- read.csv("Fireflydata - 1.csv", stringsAsFactors = FALSE)
 print(colnames(fireflies_raw))  # See original column names
 ```
@@ -330,24 +330,24 @@ print(colnames(fireflies_raw))  # See original column names
     ## [1] "firefly.count..estimate." "North.or.South"
 
 ``` r
-# --- Clean data ---
-# 1. Remove columns with no names or that are all NA
+#  Clean data 
+#  Remove columns with no names or that are all NA
 fireflies <- fireflies_raw[, !(is.na(names(fireflies_raw)) | names(fireflies_raw) == "")]
 fireflies <- fireflies[, colSums(!is.na(fireflies)) > 0]
 
-# 2. Rename columns properly
+# Rename columns properly
 colnames(fireflies) <- c("firefly_count", "region")
 
-# 3. Clean and standardize region values
+# Clean and standardize region values
 fireflies$region <- trimws(tolower(fireflies$region))
 
-# 4. Drop any rows missing region info
+# Drop any rows missing region info
 fireflies <- subset(fireflies, !is.na(region) & region != "")
 
-# 5. Convert region to factor with defined order
+# Convert region to factor with defined order
 fireflies$region <- factor(fireflies$region, levels = c("north", "south"))
 
-# --- Optional sanity check ---
+# Check
 print(unique(fireflies$region))
 ```
 
@@ -355,7 +355,7 @@ print(unique(fireflies$region))
     ## Levels: north south
 
 ``` r
-# --- Violin Plot ---
+# Violin Plot
 ggplot(fireflies, aes(x = region, y = firefly_count, fill = region)) +
   geom_violin(trim = TRUE, alpha = 0.7, color = "black") +
   geom_boxplot(width = 0.1, outlier.shape = NA, alpha = 0.5) +
