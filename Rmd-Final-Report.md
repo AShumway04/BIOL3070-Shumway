@@ -1,7 +1,7 @@
 Final Report
 ================
 Alexia Shumway
-2025-10-29
+2025-11-04
 
 - [ABSTRACT](#abstract)
 - [BACKGROUND](#background)
@@ -13,23 +13,97 @@ Alexia Shumway
   - [Firefly Abundance by Region
     Boxplot](#firefly-abundance-by-region-boxplot)
   - [Two Sample T-Test](#two-sample-t-test)
+  - [Violin Plot](#violin-plot)
 - [DICUSSION](#dicussion)
+  - [Interpretation - Boxplot](#interpretation---boxplot)
+  - [Interpretation - Violin Plot](#interpretation---violin-plot)
+  - [Two-Sample T-Test](#two-sample-t-test-1)
+  - [Intepretation - Combined](#intepretation---combined)
+  - [Limitations](#limitations)
 - [CONCLUSION](#conclusion)
 - [REFERENCES](#references)
 
 # ABSTRACT
 
+This study examined whether firefly abundance differed between
+regions(North and South), in Utah. The data was collected by statewide
+firefly observation programs. County-level observations were organized
+into northern and southern groups, and incorrectly labeled or out of
+state data was removed.Statistical analyses included visualizations and
+a two-sample t-test. These were used to determine whether the geographic
+region influences firefly population size, or not. Although the southern
+region showed a higher mean firefly abundance due to several large
+outlier counts, the northern region displayed higher median values and
+more consistent populations, as seen in the boxplot and violin plot. The
+difference between regions, however, was not statistically significant(p
+= 0.208). These results suggest that while southern Utah may
+occasionally experience very high firefly activity, northern Utah may
+support more stable populations. Overall, regional location alone does
+not appear to have a significant effect on firefly abundance in Utah.
+
 # BACKGROUND
+
+Fireflies are luminescent beetles whose abundance is influenced by
+environmental conditions such as temperature, humidity, and habitat.
+Geographic variation such as altitude and climate differences can play a
+role in shaping their distribution and population abundance.
+
+Utah’s southern and northern regions differ greatly in things such as
+temperature, elevation, and precipitation. This presents Utah as a
+particularly interesting system for studying firefly distribution.
+Understanding if these regional differences influence variation in
+firefly abundance can help identify environmental variables that may
+affect firefly populations.
+
+With growing habitat loss and changing climates all over the world,
+understanding how these things may affect fireflies is vital to keeping
+their populations at healthy levels(Lewis et al., 2020).
 
 # STUDY QUESTIONS AND HYPOTHESIS
 
 ## Study Question
 
+How does the region (north or south) affect firefly abundance in Utah?
+
 ## Hypothesis
+
+We hypothesized that northern Utah counties would have higher abundance
+of fireflies because the cooler and wetter climate would provide a more
+suitable habitat condition, than that of the southern regions which is
+generally hotter and drier.
 
 ## Prediction
 
+If northern Utah’s climate is more favorable for fireflies, counties in
+northern Utah will show a higher average firefly abundance than those in
+southern Utah when the data is compared.
+
 # METHODS
+
+Data was collected across multiple counties in Utah through regional
+firefly observation programs. The data consisted of recorded firefly
+count, city name, county name, habitat, time of observation, and
+observer identifier number. This data was then simplified for our
+analysis use. Counties were categorized into northern and southern
+regions based on geographic location.
+
+- The northern counties included: Rich, Box Elder, Cache, Daggett,
+  Davis, Duchesne, Elko, Morgan, Salt Lake, Summit, Tooele, Uintah,
+  Utah, Wasatch, and Weber.
+- The southern counties included: Beaver, Garfield, Grand, Iron, Kane,
+  San Juan, Sevier, Washington, and Wayne.
+
+Each observation was then labeled using this guide as north or south.
+The cleaned and categorized dataset was then used for analysis. A
+two-sample t-test was conducted to compare mean firefly abundance and
+determine statistical significance which was assessed at P=0.05.
+
+Two visualizations were created :
+
+1.  A Boxplot showing the median, quartiles, and range of firefly
+    abundance by region.
+2.  A Violin plot showing the full distribution density of the
+    observation in each region.
 
 ## Firefly Abundance by Region Boxplot
 
@@ -41,7 +115,7 @@ library(ggplot2)
 library(stringi)
 
 # Read in the dad
-fireflies <- read.csv("Usable Data Fireflies - Usable Data (1).csv", stringsAsFactors = FALSE)
+fireflies <- read.csv("Fireflydata - 1.csv", stringsAsFactors = FALSE)
 
 # Rename columns to simpler names
 colnames(fireflies) <- c("firefly_count", "region")
@@ -70,8 +144,8 @@ print(as.data.frame(table(region = fireflies$region, useNA = "ifany")))
 ```
 
     ##   region Freq
-    ## 1           2
-    ## 2  north  434
+    ## 1           1
+    ## 2  north  435
     ## 3  south   61
 
 ``` r
@@ -125,7 +199,7 @@ print(as.data.frame(table(region = fireflies_clean$region)))
 ```
 
     ##   region Freq
-    ## 1  north  434
+    ## 1  north  435
     ## 2  south   61
 
 ``` r
@@ -164,7 +238,7 @@ library(stringi)
 library(dplyr)
 
 # Read in data
-fireflies <- read.csv("Usable Data Fireflies - Usable Data (1).csv", stringsAsFactors = FALSE)
+fireflies <- read.csv("Fireflydata - 1.csv", stringsAsFactors = FALSE)
 
 # Ensure correct column naming
 colnames(fireflies) <- c("firefly_count", "region")
@@ -201,7 +275,7 @@ print(table(fireflies_clean$region))
 
     ## 
     ## north south 
-    ##   433    61
+    ##   434    61
 
 ``` r
 cat("\nSummary of firefly counts:\n")
@@ -215,7 +289,7 @@ print(summary(fireflies_clean$firefly_count))
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##    1.00    2.00    4.00   17.43   10.00 1000.00
+    ##     1.0     2.0     4.0    17.4    10.0  1000.0
 
 ``` r
 # T-Test
@@ -235,16 +309,154 @@ print(ttest_results)
     ##  Welch Two Sample t-test
     ## 
     ## data:  firefly_count by region
-    ## t = -1.2716, df = 61.533, p-value = 0.2083
+    ## t = -1.2727, df = 61.526, p-value = 0.2079
     ## alternative hypothesis: true difference in means between group north and group south is not equal to 0
     ## 95 percent confidence interval:
-    ##  -75.33068  16.75983
+    ##  -75.35440  16.73371
     ## sample estimates:
     ## mean in group north mean in group south 
-    ##            13.81293            43.09836
+    ##            13.78802            43.09836
+
+## Violin Plot
+
+``` r
+library(ggplot2)
+
+# --- Load and inspect data ---
+fireflies_raw <- read.csv("Fireflydata - 1.csv", stringsAsFactors = FALSE)
+print(colnames(fireflies_raw))  # See original column names
+```
+
+    ## [1] "firefly.count..estimate." "North.or.South"
+
+``` r
+# --- Clean data ---
+# 1. Remove columns with no names or that are all NA
+fireflies <- fireflies_raw[, !(is.na(names(fireflies_raw)) | names(fireflies_raw) == "")]
+fireflies <- fireflies[, colSums(!is.na(fireflies)) > 0]
+
+# 2. Rename columns properly
+colnames(fireflies) <- c("firefly_count", "region")
+
+# 3. Clean and standardize region values
+fireflies$region <- trimws(tolower(fireflies$region))
+
+# 4. Drop any rows missing region info
+fireflies <- subset(fireflies, !is.na(region) & region != "")
+
+# 5. Convert region to factor with defined order
+fireflies$region <- factor(fireflies$region, levels = c("north", "south"))
+
+# --- Optional sanity check ---
+print(unique(fireflies$region))
+```
+
+    ## [1] north south
+    ## Levels: north south
+
+``` r
+# --- Violin Plot ---
+ggplot(fireflies, aes(x = region, y = firefly_count, fill = region)) +
+  geom_violin(trim = TRUE, alpha = 0.7, color = "black") +
+  geom_boxplot(width = 0.1, outlier.shape = NA, alpha = 0.5) +
+  scale_fill_manual(values = c("north" = "#8EC9E8", "south" = "#F4A261")) +
+  coord_cartesian(ylim = c(0, 50)) +
+  labs(
+    title = "Firefly Abundance: North vs South",
+    x = "Region",
+    y = "Firefly Count"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(size = 16, face = "bold", hjust = 0.5)
+  )
+```
+
+![](Rmd-Final-Report_files/figure-gfm/violin-plot-1.png)<!-- -->
 
 # DICUSSION
 
+## Interpretation - Boxplot
+
+The boxplot comparing northern and southern Utah shows that northern
+counties had a slightly higher median firefly count.This suggests more
+consistent populations in the north. In the southern counties, there was
+a much wider range of values, this included several very high counts.
+This indicated that while most southern sites had a low number of
+fireflies a few had exceptionally high populations.
+
+Overall, the boxplot suggest that firefly abundance in the north is more
+stable. In the south it is less predictable with this region
+experiencing spikes in population size occasionally.
+
+## Interpretation - Violin Plot
+
+The violin plot provides a detailed look at the data distribution. The
+northern violin plot is narrow and centered, showing that most northern
+observations had similar values. The southern violin had a long upper
+tail, this confirms that a few of the southern counties had a very high
+count that stretched the overall range.
+
+This reinforces the idea stated above that the southern region’s higher
+average is caused by the outliers. The northern region again has
+consistent abundance levels.
+
+## Two-Sample T-Test
+
+The two-sample t-test compared the average number of fireflies between
+the north and south. The results showed a mean of 13.79 for the north
+and 43.10 for the south but the p-value being 0=0.208 does not indicated
+statistical significance.
+
+This means that the difference between regions could be due to random
+variation rather than a real biological difference. While the southern
+average appears to be higher, it is influenced by the very large
+outliers, which reduces confidence in the findings.
+
+## Intepretation - Combined
+
+Together these three tests show that Utah’s higher mean abudnace is
+coming from a few very high counts, while nother Utah’s abundance is
+more consistent across observed sites.
+
+The north has a steadier firefly population but the south occasionally
+experiences population surges. Because of the variabililty the t-test
+found no significant overall difference in mean firefly abundance
+between regions.
+
+## Limitations
+
+There are several limitations to this study which include an uneven
+sample size, high variability in population counts, labeling issues
+which led to not included data, and little is known about how the actual
+counts were conducted. Future studies should include a more balanced
+sampling, and also the analysis could be improved with different
+statistical tests that may be less sensitive to the outliers.
+
 # CONCLUSION
 
+This study compared the firefly abundance between the southern and
+northern regions of Utah. Although the the southern region had a higher
+mean abundance, this was due to a few very extreme outliers.The northern
+region showed a more stable population overall.
+
+This means our hypothesis was no support. Statistical test confirmed
+that the difference between regions was not significant (p=0.208). This
+suggests that regional location by itself does not determine firefly
+abudance in Utah. Instead, other factors such as slimate or habitat may
+play a stronger role.
+
+In conclusion, northern Utah supports more stable firefly populations
+and southern utah experiences occasional population surges. Future
+studies could investigate what causes these local differences such as
+climate, light, habitat, etc.
+
 # REFERENCES
+
+1.  ChatGPT. OpenAI, version Jan 2025. Used to fix errors such as
+    missing data and knitting errors. Accessed 2025-11-04.
+
+2.  Lewis, S. M., Wong, C. H., Owens, A. C., Fallon, C., Jepsen, S.,
+    Thancharoen, A., … & Reed, J. M. (2020). A global perspective on
+    firefly extinction threats. BioScience, 70(2), 157-167.
