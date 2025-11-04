@@ -43,17 +43,16 @@ not appear to have a significant effect on firefly abundance in Utah.
 
 # BACKGROUND
 
-Fireflies are luminescent beetles whose abundance is influenced by
-environmental conditions such as temperature, humidity, and habitat.
-Geographic variation such as altitude and climate differences can play a
-role in shaping their distribution and population abundance.
+Fireflies are glowing beetles whose population abundance is influenced
+by environmental conditions such as temperature, humidity, and habitat.
+Geographic variation such as altitude and climate can play a role in
+shaping their distribution and population abundance(Kazma et al., 2007).
 
-Utah’s southern and northern regions differ greatly in things such as
-temperature, elevation, and precipitation. This presents Utah as a
-particularly interesting system for studying firefly distribution.
-Understanding if these regional differences influence variation in
-firefly abundance can help identify environmental variables that may
-affect firefly populations.
+Utah’s southern and northern regions differ greatly in temperature,
+elevation, and precipitation. This means Utah can be an interesting
+study topic for exploring firefly distribution. Understanding if these
+regional differences influence variation in firefly abundance can help
+identify environmental variables that may affect firefly populations.
 
 With growing habitat loss and changing climates all over the world,
 understanding how these things may affect fireflies is vital to keeping
@@ -84,8 +83,8 @@ Data was collected across multiple counties in Utah through regional
 firefly observation programs. The data consisted of recorded firefly
 count, city name, county name, habitat, time of observation, and
 observer identifier number. This data was then simplified for our
-analysis use. Counties were categorized into northern and southern
-regions based on geographic location.
+analysis use. Counties were sorted into northern and southern regions
+based on geographic location.
 
 - The northern counties included: Rich, Box Elder, Cache, Daggett,
   Davis, Duchesne, Elko, Morgan, Salt Lake, Summit, Tooele, Uintah,
@@ -457,6 +456,11 @@ climate, light, habitat, etc.
 1.  ChatGPT. OpenAI, version Jan 2025. Used to fix errors such as
     missing data and knitting errors. Accessed 2025-11-04.
 
-2.  Lewis, S. M., Wong, C. H., Owens, A. C., Fallon, C., Jepsen, S.,
+2.  Kazama, S., Matsumoto, S., Ranjan, S. P., Hamamoto, H., &
+    Sawamoto, M. (2007). Characterization of firefly habitat using a
+    geographical information system with hydrological simulation.
+    Ecological Modelling, 209(2-4), 392-400.
+
+3.  Lewis, S. M., Wong, C. H., Owens, A. C., Fallon, C., Jepsen, S.,
     Thancharoen, A., … & Reed, J. M. (2020). A global perspective on
     firefly extinction threats. BioScience, 70(2), 157-167.
