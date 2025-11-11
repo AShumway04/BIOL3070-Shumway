@@ -40,80 +40,63 @@ If northern Utah's climate is more favorable for fireflies, counties in northern
 
 # METHODS
 Data was collected across multiple counties in Utah through regional firefly observation programs. The data consisted of recorded firefly count, city name, county name, habitat, time of observation, and observer identifier number. This data was then simplified for our analysis use.
+
 Counties were sorted into northern and southern regions based on geographic location.
 
 * The northern counties included: Rich, Box Elder, Cache, Daggett, Davis, Duchesne, Elko, Morgan, Salt Lake, Summit, Tooele, Uintah, Utah, Wasatch, and Weber.
 * The southern counties included: Beaver, Garfield, Grand, Iron, Kane, San Juan, Sevier, Washington, and Wayne.
 
 Each observation was then labeled using this guide as north or south. The cleaned and categorized dataset was then used for analysis.
-A two-sample t-test was conducted to compare mean firefly abundance and determine statistical significance which was assessed at P=0.05. 
+A Poisson test was conducted to compare mean firefly abundance and determine statistical significance which was assessed at P=0.05. This test was used because our data us heavily over dispersed.
 
 Two visualizations were created :
 
- 1. A Boxplot showing the median, quartiles, and range of firefly abundance by region.
+ 1. A Log Transformed Boxplot showing the median, quartiles, and range of firefly abundance by region. This was used to compress the extreme values and spread out the lower counts.
  2. A Violin plot showing the full distribution density of the observation in each region.
 
 ## Firefly Abundance by Region Boxplot
 
-```{r}
-# Firefly Boxplot
-
-# Load needed packages
+```{r firefly-boxplot-log, message=FALSE, warning=FALSE}
+# Firefly Boxplot (Log-Transformed, Cleaned)
 library(ggplot2)
 library(stringi)
 
-# Read in the dad
-fireflies <- read.csv("Fireflydata - 1.csv", stringsAsFactors = FALSE)
+#Load Data
+fireflies_raw <- read.csv("Fireflydata - 1.csv", stringsAsFactors = FALSE)
 
-# Rename columns to simpler names
+# If there are no column names or blank names, assign defaults
+if (is.null(names(fireflies_raw)) || any(names(fireflies_raw) == "")) {
+  names(fireflies_raw) <- paste0("V", seq_len(ncol(fireflies_raw)))
+}
+
+# Use only the first two relevant columns
+fireflies <- fireflies_raw[, 1:2]
 colnames(fireflies) <- c("firefly_count", "region")
 
-# Diagnostics
-cat("Original region values:\n")
-print(unique(fireflies$region))
-cat("\nCounts by region (before cleaning):\n")
-print(as.data.frame(table(region = fireflies$region, useNA = "ifany")))
-
-# Replace blanks with NA
+#Clean Region names
 fireflies$region[fireflies$region == ""] <- NA
-
-# Normalize 
 fireflies$region <- stri_trans_general(fireflies$region, "NFKC")
-
-# Remove invisible characters
 fireflies$region <- stri_replace_all_regex(fireflies$region, "\\p{C}", "")
-
-# Convert non-breaking spaces to regular and trim spaces
 fireflies$region <- gsub("\u00A0", " ", fireflies$region)
-fireflies$region <- trimws(fireflies$region)
+fireflies$region <- trimws(tolower(fireflies$region))
 
-# Convert to lowercase
-fireflies$region <- tolower(fireflies$region)
-
-# Fix obvious typos or abbreviations
+# Fix typos or abbreviations
 fireflies$region[fireflies$region %in% c("n", "nrth", "noth")] <- "north"
 fireflies$region[fireflies$region %in% c("s", "sth", "soth")] <- "south"
 
-# Keep valid categories
+# Keep valid regions only
+fireflies <- subset(fireflies, !is.na(region) & region %in% c("north", "south"))
 fireflies$region <- factor(fireflies$region, levels = c("north", "south"))
-fireflies_clean <- droplevels(subset(fireflies, !is.na(region)))
 
-# Check column names
-cat("\nUnique cleaned region values:\n")
-print(unique(fireflies_clean$region))
-cat("\nCounts by region (after cleaning):\n")
-print(as.data.frame(table(region = fireflies_clean$region)))
-
-#Box Plot
-ggplot(fireflies_clean, aes(x = region, y = firefly_count, fill = region)) +
-  geom_boxplot(width = 0.6, color = "black", alpha = 0.7) +  # clean, solid boxes
+#Plot
+ggplot(fireflies, aes(x = region, y = log10(firefly_count + 1), fill = region)) +
+  geom_boxplot(width = 0.6, color = "black", alpha = 0.7) +
+  scale_fill_manual(values = c("north" = "#8EC9E8", "south" = "#F7B500")) +
   labs(
-    title = "Firefly Abundance by Region",
+    title = "Firefly Abundance by Region (Log Scale)",
     x = "Region",
-    y = "Firefly Count"
+    y = "Log10(Firefly Count + 1)"
   ) +
-  scale_fill_manual(values = c("north" = "#8EC9E8", "south" = "#F4A261")) +  # subtle professional palette
-  coord_cartesian(ylim = c(0, 50)) +
   theme_minimal(base_size = 13) +
   theme(
     legend.position = "none",
@@ -123,57 +106,10 @@ ggplot(fireflies_clean, aes(x = region, y = firefly_count, fill = region)) +
     panel.grid.major.x = element_blank(),
     panel.grid.minor = element_blank()
   )
-
 ```
 
-## Two Sample T-Test
 
-```{r}
-# Load packages
-library(ggplot2)
-library(stringi)
-library(dplyr)
-
-# Read in data
-fireflies <- read.csv("Fireflydata - 1.csv", stringsAsFactors = FALSE)
-
-# Ensure correct column naming
-colnames(fireflies) <- c("firefly_count", "region")
-
-# Convert firefly_count to numeric & handle blanks
-fireflies$firefly_count <- suppressWarnings(as.numeric(fireflies$firefly_count))
-fireflies$firefly_count[fireflies$firefly_count < 0] <- NA  # Remove impossible values if any
-
-# Clean region column
-fireflies$region <- trimws(fireflies$region)
-fireflies$region[fireflies$region == ""] <- NA
-fireflies$region <- stri_trans_general(fireflies$region, "NFKC")
-fireflies$region <- tolower(fireflies$region)
-
-# Fix region typos and mislabeled data
-fireflies$region[fireflies$region %in% c("n", "nrth", "noth", "north ", "northwest")] <- "north"
-fireflies$region[fireflies$region %in% c("s", "sth", "soth", "south ", "southeast")] <- "south"
-
-# Keep only valid data
-fireflies_clean <- fireflies %>%
-  filter(region %in% c("north", "south"), !is.na(firefly_count))
-
-fireflies_clean$region <- factor(fireflies_clean$region)
-
-# Diagnostic check
-cat("Counts in each group:\n")
-print(table(fireflies_clean$region))
-cat("\nSummary of firefly counts:\n")
-print(summary(fireflies_clean$firefly_count))
-
-# T-Test
-ttest_results <- t.test(firefly_count ~ region, data = fireflies_clean)
-
-cat("\nT-test Results:\n")
-print(ttest_results)
-
-```
-## Violin Plot
+## Violin Plot of North Versus South Region Population Distribution
 ```{r violin-plot, message=FALSE, warning=FALSE}
 library(ggplot2)
 
@@ -205,7 +141,7 @@ print(unique(fireflies$region))
 ggplot(fireflies, aes(x = region, y = firefly_count, fill = region)) +
   geom_violin(trim = TRUE, alpha = 0.7, color = "black") +
   geom_boxplot(width = 0.1, outlier.shape = NA, alpha = 0.5) +
-  scale_fill_manual(values = c("north" = "#8EC9E8", "south" = "#F4A261")) +
+  scale_fill_manual(values = c("north" = "#8EC9E8", "south" = "#F7B500")) +
   coord_cartesian(ylim = c(0, 50)) +
   labs(
     title = "Firefly Abundance: North vs South",
@@ -219,32 +155,87 @@ ggplot(fireflies, aes(x = region, y = firefly_count, fill = region)) +
   )
 ```
 
+## Poisson Statistical Test
+```{r firefly-poisson-test, message=FALSE, warning=FALSE}
+# Firefly Poisson regression
+library(stringi)
+
+# Load Data
+fireflies_raw <- read.csv("Fireflydata - 1.csv", stringsAsFactors = FALSE)
+
+# Handle missing or blank column names
+if (is.null(names(fireflies_raw)) || any(names(fireflies_raw) == "")) {
+  names(fireflies_raw) <- paste0("V", seq_len(ncol(fireflies_raw)))
+}
+
+# Keep first two columns and rename
+fireflies <- fireflies_raw[, 1:2]
+colnames(fireflies) <- c("firefly_count", "region")
+
+# Clean region values
+fireflies$region[fireflies$region == ""] <- NA
+fireflies$region <- stri_trans_general(fireflies$region, "NFKC")
+fireflies$region <- stri_replace_all_regex(fireflies$region, "\\p{C}", "")
+fireflies$region <- gsub("\u00A0", " ", fireflies$region)
+fireflies$region <- trimws(tolower(fireflies$region))
+fireflies$region[fireflies$region %in% c("n", "nrth", "noth")] <- "north"
+fireflies$region[fireflies$region %in% c("s", "sth", "soth")] <- "south"
+
+# Keep only valid regions
+fireflies <- subset(fireflies, !is.na(region) & region %in% c("north", "south"))
+fireflies$region <- factor(fireflies$region, levels = c("north", "south"))
+
+# Poisson Test
+poisson_model <- glm(firefly_count ~ region, data = fireflies, family = "poisson")
+
+# Check for overdispersion
+dispersion <- sum(residuals(poisson_model, type = "pearson")^2) / poisson_model$df.residual
+cat("Dispersion:", dispersion, "\n")
+
+# If overdispersed, switch to quasi-Poisson
+if (dispersion > 1.5) {
+  cat("⚠️  Overdispersion detected (dispersion >", round(dispersion, 2), 
+      "): switching to quasi-Poisson model.\n")
+  final_model <- glm(firefly_count ~ region, data = fireflies, family = "quasipoisson")
+} else {
+  final_model <- poisson_model
+}
+
+# Summary and P-Value
+summary(final_model)
+
+# Extract p-value for region
+p_value <- coef(summary(final_model))["regionsouth", "Pr(>|t|)"]
+if (is.na(p_value)) {
+  # Poisson models use z-tests instead of t-tests
+  p_value <- coef(summary(final_model))["regionsouth", "Pr(>|z|)"]
+}
+
+cat("\nP-value for region (North vs South):", signif(p_value, 4), "\n")
+
+# Exponentiated coefficients (rate ratios)
+rate_ratio <- exp(coef(final_model))
+cat("Rate ratio (South/North):", signif(rate_ratio["regionsouth"], 4), "\n")
+```
 
 # DICUSSION
 
 ## Interpretation - Boxplot
 
-The boxplot comparing northern and southern Utah shows that northern counties had a slightly higher median firefly count.This suggests more consistent populations in the north. In the southern counties, there was a much wider range of values, this included several very high counts. This indicated that while most southern sites had a low number of fireflies a few had exceptionally high populations.
-
-Overall, the boxplot suggest that firefly abundance in the north is more stable. In the south it is less predictable with this region experiencing spikes in population size occasionally.
+The box plot comparing northern and southern Utah shows that northern counties had a slightly higher median firefly count.This suggests more consistent populations in the north. In the southern counties, there was a much wider range of values, this included several very high counts. This indicated that while most southern sites had a low number of fireflies a few had exceptionally high populations.
 
 ## Interpretation - Violin Plot
 
 The violin plot provides a detailed look at the data distribution. The northern violin plot is narrow and centered, showing that most northern observations had similar values. The southern violin had a long upper tail, this confirms that a few of the southern counties had a very high count that stretched the overall range.
 
-This reinforces the idea stated above that the southern region's higher average is caused by the outliers. The northern region again has consistent abundance levels.
+## Poisson Test
 
-## Two-Sample T-Test
-
-The two-sample t-test compared the average number of fireflies between the north and south. The results showed a mean of 13.79 for the north and 43.10 for the south but the p-value being 0=0.208 does not indicated statistical significance.
-
-This means that the difference between regions could be due to random variation rather than a real biological difference. While the southern average appears to be higher, it is influenced by the very large outliers, which reduces confidence in the findings.
+A quasi-Poisson regression test showed that there is a significant different in firefly abundance between regions (p=0.003).
+Firefly counts were significantly higher in the southern region, with the rate ratio being 3.13. This means that on average the south had over three times the firefly abundance than the north.
 
 ## Intepretation - Combined 
 
- Together these three tests show that Utah's higher mean abudnace is coming from a few very high counts, while nother Utah's abundance is more consistent across observed sites.
- 
- The north has a steadier firefly population but the south occasionally experiences population surges. Because of the variabililty the t-test found no significant overall difference in mean firefly abundance between regions.
+ Together these three test showed that the south had a higher firefly abundance, and a higher spread of firefly abundance across the counties.
  
 ## Limitations
 
@@ -253,11 +244,11 @@ There are several limitations to this study which include an uneven sample size,
 
 # CONCLUSION
 
-This study compared the firefly abundance between the southern and northern regions of Utah. Although the the southern region had a higher mean abundance, this was due to a few very extreme outliers.The northern region showed a more stable population overall.
+This study compared the firefly abundance between the southern and northern regions of Utah. We found that the south had a higher overall abundance which disproves our hypothesis, which orginally stated that northern Utah would have higher population abundance.
 
-This means our hypothesis was no support. Statistical test confirmed that the difference between regions was not significant (p=0.208). This suggests that regional location by itself does not determine firefly abudance in Utah. Instead, other factors such as slimate or habitat may play a stronger role.
+The statistical test confirmed that the south had a much higher abundance, over three times higher. The p-value showed that this difference was highly statistically significant (p=0.003).
 
-In conclusion, northern Utah supports more stable firefly populations and southern utah experiences occasional population surges. Future studies could investigate what causes these local differences such as climate, light, habitat, etc.
+In conclusion, southern Utah supports higher firefly population compared to northern Utah. Future studies could investigate what causes these local differences such as climate, light, habitat, etc.
 
 # REFERENCES
 
