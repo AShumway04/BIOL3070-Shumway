@@ -1,46 +1,53 @@
 Final Report
 ================
 Alexia Shumway
-2025-11-11
+2025-12-02
 
 - [ABSTRACT](#abstract)
 - [BACKGROUND](#background)
-- [STUDY QUESTIONS AND HYPOTHESIS](#study-questions-and-hypothesis)
+- [STUDY QUESTION AND HYPOTHESIS](#study-question-and-hypothesis)
   - [Study Question](#study-question)
   - [Hypothesis](#hypothesis)
   - [Prediction](#prediction)
 - [METHODS](#methods)
-  - [Firefly Abundance by Region
-    Boxplot](#firefly-abundance-by-region-boxplot)
+  - [Data Cleaning and Preparation](#data-cleaning-and-preparation)
+  - [Data Visualization](#data-visualization)
+  - [Statistical Tests](#statistical-tests)
+  - [Check Normality and Dispersion](#check-normality-and-dispersion)
   - [Violin Plot of North Versus South Region Population
     Distribution](#violin-plot-of-north-versus-south-region-population-distribution)
-  - [Poisson Statistical Test](#poisson-statistical-test)
+  - [Shapiro Wilks Test and One Sided Wilcoxon
+    Test](#shapiro-wilks-test-and-one-sided-wilcoxon-test)
+  - [Median Comparison](#median-comparison)
 - [DICUSSION](#dicussion)
-  - [Interpretation - Boxplot](#interpretation---boxplot)
-  - [Interpretation - Violin Plot](#interpretation---violin-plot)
-  - [Poisson Test](#poisson-test)
-  - [Intepretation - Combined](#intepretation---combined)
+  - [Interpretation of
+    Visualizations](#interpretation-of-visualizations)
+  - [Normality Results](#normality-results)
+  - [Wilcoxon Test Interpretation](#wilcoxon-test-interpretation)
+  - [Median Comparison](#median-comparison-1)
+  - [Interpretation Combined](#interpretation-combined)
   - [Limitations](#limitations)
 - [CONCLUSION](#conclusion)
 - [REFERENCES](#references)
 
 # ABSTRACT
 
-This study examined whether firefly abundance differed between
-regions(North and South), in Utah. The data was collected by statewide
-firefly observation programs. County-level observations were organized
-into northern and southern groups, and incorrectly labeled or out of
-state data was removed.Statistical analyses included visualizations and
-a two-sample t-test. These were used to determine whether the geographic
-region influences firefly population size, or not. Although the southern
-region showed a higher mean firefly abundance due to several large
-outlier counts, the northern region displayed higher median values and
-more consistent populations, as seen in the boxplot and violin plot. The
-difference between regions, however, was not statistically significant(p
-= 0.208). These results suggest that while southern Utah may
-occasionally experience very high firefly activity, northern Utah may
-support more stable populations. Overall, regional location alone does
-not appear to have a significant effect on firefly abundance in Utah.
+This study examined whether firefly abundance differed between northern
+and southern regions of Utah. Because fireflies respond strongly to
+environmental conditions such as temperature and moisture, and these
+differ between Utah’s regions, we tested whether geographic location
+influenced observed firefly counts. Data from statewide citizen-science
+observations were cleaned and sorted into northern and southern groups
+before analysis. Visualizations (histograms and violin plots) were used
+to explore distribution shape, and statistical tests included
+Shapiro–Wilk tests for normality, a one-sided Wilcoxon rank-sum test,
+and a comparison of medians. The data were highly skewed and non-normal,
+and the log transformation did not meaningfully normalize the
+distribution. Both the Wilcoxon test and median comparison showed that
+southern Utah had numerically higher firefly counts, but these
+differences were not statistically significant. Overall, the results do
+not support the hypothesis that northern Utah has higher firefly
+abundance.
 
 # BACKGROUND
 
@@ -59,7 +66,7 @@ With growing habitat loss and changing climates all over the world,
 understanding how these things may affect fireflies is vital to keeping
 their populations at healthy levels(Lewis et al., 2020).
 
-# STUDY QUESTIONS AND HYPOTHESIS
+# STUDY QUESTION AND HYPOTHESIS
 
 ## Study Question
 
@@ -80,90 +87,122 @@ southern Utah when the data is compared.
 
 # METHODS
 
+## Data Cleaning and Preparation
+
 Data was collected across multiple counties in Utah through regional
-firefly observation programs. The data consisted of recorded firefly
-count, city name, county name, habitat, time of observation, and
-observer identifier number. This data was then simplified for our
-analysis use.
+firefly observation programs. The raw dataset included firefly count,
+city name, county name, habitat, time of observation, and observer ID.
+The dataset contained formatting issues such as hidden header rows,
+blank or incorrect region labels, and typos. These were removed or
+corrected during cleaning.
 
 Counties were sorted into northern and southern regions based on
-geographic location.
+geographic location:
 
-- The northern counties included: Rich, Box Elder, Cache, Daggett,
-  Davis, Duchesne, Elko, Morgan, Salt Lake, Summit, Tooele, Uintah,
-  Utah, Wasatch, and Weber.
-- The southern counties included: Beaver, Garfield, Grand, Iron, Kane,
-  San Juan, Sevier, Washington, and Wayne.
+Northern counties: Rich, Box Elder, Cache, Daggett, Davis, Duchesne,
+Elko, Morgan, Salt Lake, Summit, Tooele, Uintah, Utah, Wasatch, Weber
+Southern counties: Beaver, Garfield, Grand, Iron, Kane, San Juan,
+Sevier, Washington, and Wayne
 
-Each observation was then labeled using this guide as north or south.
-The cleaned and categorized dataset was then used for analysis. A
-Poisson test was conducted to compare mean firefly abundance and
-determine statistical significance which was assessed at P=0.05. This
-test was used because our data us heavily over dispersed.
+The image below shows how counties were separated. Anything above the
+red line is northern, anything below the red line is southern.
 
-Two visualizations were created :
+Each observation was labeled as “north” or “south” using this guide. The
+cleaned dataset was then used for analysis.
 
-1.  A Log Transformed Boxplot showing the median, quartiles, and range
-    of firefly abundance by region. This was used to compress the
-    extreme values and spread out the lower counts.
-2.  A Violin plot showing the full distribution density of the
-    observation in each region.
+<center>
 
-## Firefly Abundance by Region Boxplot
+<figure>
+<img src="counties%20image.jpg"
+alt="Utah county map showing north–south boundary" />
+<figcaption aria-hidden="true">Utah county map showing north–south
+boundary</figcaption>
+</figure>
+
+</center>
+
+## Data Visualization
+
+Two histograms were created to examine distribution shape:
+
+1.  Histogram of raw counts, which revealed strong right-skew.
+
+2.  Histogram of log10(count + 1), which compressed extreme values but
+    did not normalize the distribution.
+
+A violin plot was also created to visualize the spread and density of
+firefly counts across the two regions.
+
+## Statistical Tests
+
+Because the data were non-normal, we tested normality using the
+Shapiro–Wilk test for each region. Both regions had extremely low
+p-values, confirming that normality assumptions were violated.
+
+A one-sided Wilcoxon rank-sum test was then used to test the hypothesis
+that northern Utah had higher firefly abundance than southern Utah.
+
+Lastly, medians for each region were compared to provide a simple
+distribution-free measure of central tendency.
+
+## Check Normality and Dispersion
 
 ``` r
-# Firefly Boxplot (Log-Transformed, Cleaned)
-library(ggplot2)
 library(stringi)
 
-#Load Data
+# 1. Load data  (YOUR FILE NAME)
 fireflies_raw <- read.csv("Fireflydata - 1.csv", stringsAsFactors = FALSE)
 
-# If there are no column names or blank names, assign defaults
+# 2. Handle missing / blank column names
 if (is.null(names(fireflies_raw)) || any(names(fireflies_raw) == "")) {
   names(fireflies_raw) <- paste0("V", seq_len(ncol(fireflies_raw)))
 }
 
-# Use only the first two relevant columns
+# 3. Keep first two columns and rename
 fireflies <- fireflies_raw[, 1:2]
 colnames(fireflies) <- c("firefly_count", "region")
 
-#Clean Region names
+# 4. Clean region values
 fireflies$region[fireflies$region == ""] <- NA
 fireflies$region <- stri_trans_general(fireflies$region, "NFKC")
 fireflies$region <- stri_replace_all_regex(fireflies$region, "\\p{C}", "")
 fireflies$region <- gsub("\u00A0", " ", fireflies$region)
 fireflies$region <- trimws(tolower(fireflies$region))
 
-# Fix typos or abbreviations
+# Fix common typos
 fireflies$region[fireflies$region %in% c("n", "nrth", "noth")] <- "north"
 fireflies$region[fireflies$region %in% c("s", "sth", "soth")] <- "south"
 
-# Keep valid regions only
+# Keep only valid rows
 fireflies <- subset(fireflies, !is.na(region) & region %in% c("north", "south"))
 fireflies$region <- factor(fireflies$region, levels = c("north", "south"))
 
-#Plot
-ggplot(fireflies, aes(x = region, y = log10(firefly_count + 1), fill = region)) +
-  geom_boxplot(width = 0.6, color = "black", alpha = 0.7) +
-  scale_fill_manual(values = c("north" = "#8EC9E8", "south" = "#F7B500")) +
-  labs(
-    title = "Firefly Abundance by Region (Log Scale)",
-    x = "Region",
-    y = "Log10(Firefly Count + 1)"
-  ) +
-  theme_minimal(base_size = 13) +
-  theme(
-    legend.position = "none",
-    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
-    axis.text = element_text(size = 12),
-    axis.title = element_text(size = 13),
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor = element_blank()
-  )
+# Convert counts to numeric
+fireflies$firefly_count <- as.numeric(fireflies$firefly_count)
+
+# A. Histograms (raw vs log10+1)
+
+
+hist(
+  fireflies$firefly_count,
+  breaks = 30,
+  main = "Histogram of Raw Firefly Counts",
+  xlab = "Firefly Count"
+)
 ```
 
-![](Rmd-Final-Report_files/figure-gfm/firefly-boxplot-log-1.png)<!-- -->
+![](Rmd-Final-Report_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+
+``` r
+hist(
+  log10(fireflies$firefly_count + 1),
+  breaks = 30,
+  main = "Histogram of Log10(Firefly Count + 1)",
+  xlab = "Log10(Firefly Count + 1)"
+)
+```
+
+![](Rmd-Final-Report_files/figure-gfm/unnamed-chunk-1-2.png)<!-- -->
 
 ## Violin Plot of North Versus South Region Population Distribution
 
@@ -223,168 +262,203 @@ ggplot(fireflies, aes(x = region, y = firefly_count, fill = region)) +
 
 ![](Rmd-Final-Report_files/figure-gfm/violin-plot-1.png)<!-- -->
 
-## Poisson Statistical Test
+## Shapiro Wilks Test and One Sided Wilcoxon Test
 
 ``` r
-# Firefly Poisson regression
-library(stringi)
+# ================================
+# Load & Clean the Data
+# ================================
+fireflies <- read.csv("Fireflydata - 1.csv", stringsAsFactors = TRUE)
 
-# Load Data
-fireflies_raw <- read.csv("Fireflydata - 1.csv", stringsAsFactors = FALSE)
+# Remove hidden header row inside data
+fireflies <- fireflies[grepl("^[0-9]+$", fireflies$firefly.count..estimate.), ]
 
-# Handle missing or blank column names
-if (is.null(names(fireflies_raw)) || any(names(fireflies_raw) == "")) {
-  names(fireflies_raw) <- paste0("V", seq_len(ncol(fireflies_raw)))
-}
+# Convert count column to numeric
+fireflies$firefly.count..estimate. <- as.numeric(fireflies$firefly.count..estimate.)
 
-# Keep first two columns and rename
-fireflies <- fireflies_raw[, 1:2]
-colnames(fireflies) <- c("firefly_count", "region")
+# Clean region column
+fireflies <- subset(
+  fireflies,
+  !is.na(North.or.South) & North.or.South != ""
+)
 
-# Clean region values
-fireflies$region[fireflies$region == ""] <- NA
-fireflies$region <- stri_trans_general(fireflies$region, "NFKC")
-fireflies$region <- stri_replace_all_regex(fireflies$region, "\\p{C}", "")
-fireflies$region <- gsub("\u00A0", " ", fireflies$region)
-fireflies$region <- trimws(tolower(fireflies$region))
-fireflies$region[fireflies$region %in% c("n", "nrth", "noth")] <- "north"
-fireflies$region[fireflies$region %in% c("s", "sth", "soth")] <- "south"
+# Drop unused factor levels
+fireflies$North.or.South <- droplevels(fireflies$North.or.South)
 
-# Keep only valid regions
-fireflies <- subset(fireflies, !is.na(region) & region %in% c("north", "south"))
-fireflies$region <- factor(fireflies$region, levels = c("north", "south"))
+# ================================
+# Create cleaner names
+# ================================
+fireflies$firefly_count <- fireflies$firefly.count..estimate.
+fireflies$region <- fireflies$North.or.South
 
-# Poisson Test
-poisson_model <- glm(firefly_count ~ region, data = fireflies, family = "poisson")
+# ================================
+# FIX: Force correct region order
+# (south first, north second)
+# ================================
+fireflies$region <- factor(fireflies$region, levels = c("south", "north"))
 
-# Check for overdispersion
-dispersion <- sum(residuals(poisson_model, type = "pearson")^2) / poisson_model$df.residual
-cat("Dispersion:", dispersion, "\n")
-```
-
-    ## Dispersion: 273.4165
-
-``` r
-# If overdispersed, switch to quasi-Poisson
-if (dispersion > 1.5) {
-  cat("⚠️  Overdispersion detected (dispersion >", round(dispersion, 2), 
-      "): switching to quasi-Poisson model.\n")
-  final_model <- glm(firefly_count ~ region, data = fireflies, family = "quasipoisson")
-} else {
-  final_model <- poisson_model
-}
-```
-
-    ## ⚠️  Overdispersion detected (dispersion > 273.42 ): switching to quasi-Poisson model.
-
-``` r
-# Summary and P-Value
-summary(final_model)
+# ================================
+# Shapiro-Wilk Normality Tests
+# ================================
+shapiro.test(fireflies$firefly_count[fireflies$region == "south"])
 ```
 
     ## 
-    ## Call:
-    ## glm(formula = firefly_count ~ region, family = "quasipoisson", 
-    ##     data = fireflies)
+    ##  Shapiro-Wilk normality test
     ## 
-    ## Coefficients:
-    ##             Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)   2.6238     0.2138  12.275  < 2e-16 ***
-    ## regionsouth   1.1397     0.3869   2.946  0.00337 ** 
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## (Dispersion parameter for quasipoisson family taken to be 273.4234)
-    ## 
-    ##     Null deviance: 30447  on 494  degrees of freedom
-    ## Residual deviance: 28463  on 493  degrees of freedom
-    ##   (1 observation deleted due to missingness)
-    ## AIC: NA
-    ## 
-    ## Number of Fisher Scoring iterations: 7
+    ## data:  fireflies$firefly_count[fireflies$region == "south"]
+    ## W = 0.22918, p-value = 3.044e-16
 
 ``` r
-# Extract p-value for region
-p_value <- coef(summary(final_model))["regionsouth", "Pr(>|t|)"]
-if (is.na(p_value)) {
-  # Poisson models use z-tests instead of t-tests
-  p_value <- coef(summary(final_model))["regionsouth", "Pr(>|z|)"]
-}
-
-cat("\nP-value for region (North vs South):", signif(p_value, 4), "\n")
+shapiro.test(fireflies$firefly_count[fireflies$region == "north"])
 ```
 
     ## 
-    ## P-value for region (North vs South): 0.003374
+    ##  Shapiro-Wilk normality test
+    ## 
+    ## data:  fireflies$firefly_count[fireflies$region == "north"]
+    ## W = 0.17637, p-value < 2.2e-16
 
 ``` r
-# Exponentiated coefficients (rate ratios)
-rate_ratio <- exp(coef(final_model))
-cat("Rate ratio (South/North):", signif(rate_ratio["regionsouth"], 4), "\n")
+# ================================
+# Wilcoxon Rank-Sum Test (south > north)
+# ================================
+wilcox.test(
+  firefly_count ~ region,
+  data = fireflies,
+  alternative = "greater"
+)
 ```
 
-    ## Rate ratio (South/North): 3.126
+    ## 
+    ##  Wilcoxon rank sum test with continuity correction
+    ## 
+    ## data:  firefly_count by region
+    ## W = 12635, p-value = 0.7192
+    ## alternative hypothesis: true location shift is greater than 0
+
+## Median Comparison
+
+``` r
+# Load & Clean Data 
+fireflies <- read.csv("Fireflydata - 1.csv", stringsAsFactors = TRUE)
+
+# Remove hidden header rows
+fireflies <- fireflies[grepl("^[0-9]+$", fireflies$firefly.count..estimate.), ]
+
+# Convert count to numeric
+fireflies$firefly.count..estimate. <- as.numeric(fireflies$firefly.count..estimate.)
+
+# Clean region labels
+fireflies <- subset(
+  fireflies,
+  !is.na(North.or.South) & North.or.South != ""
+)
+
+# Drop unused levels
+fireflies$North.or.South <- droplevels(fireflies$North.or.South)
+
+# 
+# Create clean column names
+fireflies$firefly_count <- fireflies$firefly.count..estimate.
+fireflies$region <- fireflies$North.or.South
+
+# MEDIAN CALCULATION
+tapply(fireflies$firefly_count, fireflies$region, median)
+```
+
+    ## north south 
+    ##     4     4
 
 # DICUSSION
 
-## Interpretation - Boxplot
+## Interpretation of Visualizations
 
-The box plot comparing northern and southern Utah shows that northern
-counties had a slightly higher median firefly count.This suggests more
-consistent populations in the north. In the southern counties, there was
-a much wider range of values, this included several very high counts.
-This indicated that while most southern sites had a low number of
-fireflies a few had exceptionally high populations.
+The violin plot showed that southern Utah had a wider spread of values
+and several high outliers, while northern Utah had a tighter
+distribution. The histograms also confirmed that firefly counts in both
+regions were heavily right-skewed. The log transformation reduced the
+influence of extreme values but did not make the data normal.
 
-## Interpretation - Violin Plot
+## Normality Results
 
-The violin plot provides a detailed look at the data distribution. The
-northern violin plot is narrow and centered, showing that most northern
-observations had similar values. The southern violin had a long upper
-tail, this confirms that a few of the southern counties had a very high
-count that stretched the overall range.
+The Shapiro–Wilk tests confirmed that the data were non-normal for both
+regions (north: W = 0.18, p \< 2.2e-16; south: W = 0.28, p \< 2.2e-16).
+Because of the strong skew and non-normality, we relied on
+non-parametric tests for regional comparisons.
 
-## Poisson Test
+## Wilcoxon Test Interpretation
 
-A quasi-Poisson regression test showed that there is a significant
-different in firefly abundance between regions (p=0.003). Firefly counts
-were significantly higher in the southern region, with the rate ratio
-being 3.13. This means that on average the south had over three times
-the firefly abundance than the north.
+The one-sided Wilcoxon test was used to evaluate our hypothesis that
+northern Utah would have higher firefly abundance. The test was not
+significant (W = 12635, p = 0.72), meaning there is no statistical
+evidence that northern counties had higher counts. Even though the
+southern region had higher numerical values on average, these
+differences were not strong enough to be detected statistically.
 
-## Intepretation - Combined
+## Median Comparison
 
-Together these three test showed that the south had a higher firefly
-abundance, and a higher spread of firefly abundance across the counties.
+Median firefly counts were also compared between regions to measure
+central tendency. Both regions had the same median value of 4,
+indicating that the typical observation was similar in both the north
+and the south.
+
+Even though the medians were equal, the southern region showed a much
+wider range and several larger outlier counts, which is why the violin
+plot displayed a longer tail for the south. This supports the idea that
+although the central tendency is similar, the southern region
+occasionally produces high-count observations that are not seen the in
+north.
+
+## Interpretation Combined
+
+Overall, the data does not support the original hypothesis that northern
+Utah would have higher firefly abundance. Although the south displayed
+higher maximum values and greater spread, these patterns were not
+statistically significant.
 
 ## Limitations
 
-There are several limitations to this study which include an uneven
-sample size, high variability in population counts, labeling issues
-which led to not included data, and little is known about how the actual
-counts were conducted. Future studies should include a more balanced
-sampling, and also the analysis could be improved with different
-statistical tests that may be less sensitive to the outliers.
+There are several limitations in this study that may have affected the
+results. First, the dataset had uneven sample sizes between regions,
+with far more observations recorded in northern Utah than in the south.
+This difference can make it harder to detect true differences in
+abundance. The data were also highly skewed, with both regions
+containing many low counts and the south having a few extremely high
+values. These outliers stretched the distribution and contributed to the
+strong non-normality found in the Shapiro–Wilk tests.
+
+Another limitation is that the data were collected through
+citizen-science observations, meaning sampling effort was not
+standardized. Some counties may have simply received more observers,
+more active participants, or more frequent reporting. There were also
+labeling mistakes and formatting inconsistencies in the raw dataset,
+which required extensive cleaning and may have resulted in the removal
+of useful observations.
 
 # CONCLUSION
 
-This study compared the firefly abundance between the southern and
-northern regions of Utah. We found that the south had a higher overall
-abundance which disproves our hypothesis, which orginally stated that
-northern Utah would have higher population abundance.
+This study compared firefly abundance between northern and southern Utah
+to test the hypothesis that northern counties, with cooler and wetter
+climates, would support higher firefly populations. After cleaning and
+analyzing the data, the results did not support the original hypothesis.
+The Wilcoxon rank-sum test found no significant difference between
+regions (p = 0.72), and the median counts were identical in both groups
+(median = 4). Although the southern region showed higher numerical
+values and greater variability, these differences were not statistically
+meaningful.
 
-The statistical test confirmed that the south had a much higher
-abundance, over three times higher. The p-value showed that this
-difference was highly statistically significant (p=0.003).
-
-In conclusion, southern Utah supports higher firefly population compared
-to northern Utah. Future studies could investigate what causes these
-local differences such as climate, light, habitat, etc.
+Overall, the results indicate that based on the available dataset, there
+is no clear evidence that northern Utah has higher firefly abundance
+than southern Utah. Future studies should incorporate more standardized
+sampling, include environmental factors, and collect more balanced
+observations across regions to better understand what drives firefly
+distribution in Utah.
 
 # REFERENCES
 
 1.  ChatGPT. OpenAI, version Jan 2025. Used to fix errors such as
-    missing data and knitting errors. Accessed 2025-11-11.
+    missing data and knitting errors. Accessed 2025-12-02.
 
 2.  Kazama, S., Matsumoto, S., Ranjan, S. P., Hamamoto, H., &
     Sawamoto, M. (2007). Characterization of firefly habitat using a
@@ -394,3 +468,6 @@ local differences such as climate, light, habitat, etc.
 3.  Lewis, S. M., Wong, C. H., Owens, A. C., Fallon, C., Jepsen, S.,
     Thancharoen, A., … & Reed, J. M. (2020). A global perspective on
     firefly extinction threats. BioScience, 70(2), 157-167.
+
+4.  Natural History Museum of Utah. (n.d.). Fireflies of Utah – Citizen
+    Science Project. <https://nhmu.utah.edu/citizen-science/fireflies>​
