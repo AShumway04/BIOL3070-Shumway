@@ -265,9 +265,8 @@ ggplot(fireflies, aes(x = region, y = firefly_count, fill = region)) +
 ## Shapiro Wilks Test and One Sided Wilcoxon Test
 
 ``` r
-# ================================
 # Load & Clean the Data
-# ================================
+
 fireflies <- read.csv("Fireflydata - 1.csv", stringsAsFactors = TRUE)
 
 # Remove hidden header row inside data
@@ -285,21 +284,20 @@ fireflies <- subset(
 # Drop unused factor levels
 fireflies$North.or.South <- droplevels(fireflies$North.or.South)
 
-# ================================
+
 # Create cleaner names
-# ================================
+
 fireflies$firefly_count <- fireflies$firefly.count..estimate.
 fireflies$region <- fireflies$North.or.South
 
-# ================================
+
 # FIX: Force correct region order
-# (south first, north second)
-# ================================
+
 fireflies$region <- factor(fireflies$region, levels = c("south", "north"))
 
-# ================================
+
 # Shapiro-Wilk Normality Tests
-# ================================
+
 shapiro.test(fireflies$firefly_count[fireflies$region == "south"])
 ```
 
@@ -320,9 +318,8 @@ shapiro.test(fireflies$firefly_count[fireflies$region == "north"])
     ## W = 0.17637, p-value < 2.2e-16
 
 ``` r
-# ================================
 # Wilcoxon Rank-Sum Test (south > north)
-# ================================
+
 wilcox.test(
   firefly_count ~ region,
   data = fireflies,
